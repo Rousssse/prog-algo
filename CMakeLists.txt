@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.20)
 
 # ---Choose project name---
-project(Simple-p6-Setup)
+project(prog-algo)
 
 # ---Declare source files---
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS src/*)
@@ -29,7 +29,6 @@ if(WARNINGS_AS_ERRORS)
         target_compile_options(${PROJECT_NAME} PRIVATE -Werror)
     endif()
 endif()
-
 # ---Setup Testing---
 include(FetchContent)
 FetchContent_Declare(
@@ -41,5 +40,10 @@ FetchContent_MakeAvailable(doctest)
 target_link_libraries(${PROJECT_NAME} PRIVATE doctest::doctest)
 
 # ---Add p6 library---
-add_subdirectory(lib/p6)
+FetchContent_Declare(
+    p6
+    GIT_REPOSITORY https://github.com/julesfouchy/p6
+    GIT_TAG b9e6366e1198abdd7bc835e6125f9ff5b89a75b8
+)
+FetchContent_MakeAvailable(p6)
 target_link_libraries(${PROJECT_NAME} PRIVATE p6::p6)
