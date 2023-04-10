@@ -119,8 +119,8 @@ void Boid::update(p6::Context& ctx, std::vector<Boid>& boids)
     move(ctx);
     UpdateDirection();
     checkBorders(ctx);
-    Separation();
-    Alignment(boids);
+    // Separation(boids);
+    // Alignment(boids);
 
     // Cohesion(boids);
 
@@ -129,25 +129,27 @@ void Boid::update(p6::Context& ctx, std::vector<Boid>& boids)
     this->neighbors.clear();
 }
 
-void Boid::Separation()
+void Boid::Separation(const std::vector<Boid>& neighbors)
 {
-    std::vector<Boid> collisions;
-    glm::vec2         totalForce(0.0f, 0.0f);
-    for (auto& boid : this->neighbors)
+    glm::vec2 totalForce(0.0f, 0.0f);
+    int       neighborCount = 0;
+
+    for (const auto& boid : neighbors)
     {
-        float distance = glm::distance(this->position, boid.position);
+        float distance = glm::distance(position, boid.position);
         if (distance != 0)
         {
-            totalForce += (this->position - boid.position) / distance;
+            totalForce += (position - boid.position) / distance;
         }
-        collisions.push_back(boid);
+        neighborCount++;
     }
 
-    if (!collisions.empty())
+    if (neighborCount > 0)
     {
-        totalForce /= static_cast<float>(collisions.size());
-        this->direction += normalize(totalForce) * this->avoidance;
+        totalForce /= static_cast<float>(neighborCount);
+        totalForce = normalize(totalForce);
     }
+    this->direction += totalForce * this->avoidance;
 }
 
 void Boid::Alignment(const std::vector<Boid>& neighbors)

@@ -23,24 +23,23 @@ int main(int argc, char* argv[])
 
     // Actual app
     // auto ctx = p6::Context{{.title = "prog-algo"}};
-    auto  ctx           = p6::Context{{1280, 720, "Dear ImGui"}};
-    float circle_radius = 0.1f;
-    float boid_speed    = 0.4f;
-    float cohesion      = 1.f;
-    float avoidance     = 0.5f;
-    float alignment     = 0.2f;
-
+    auto ctx = p6::Context{{1280, 720, "Dear ImGui"}};
     ctx.maximize_window();
 
+    // data
     std::vector<Boid> boids;
+    float             circle_radius = 0.1f;
+    float             boid_speed    = 0.4f;
+    float             cohesion      = 1.f;
+    float             avoidance     = 0.5f;
+    float             alignment     = 0.2f;
+    int               number_boids  = 25;
 
-    int number_boids = 25;
     for (int i = 0; i <= number_boids; ++i)
     {
         glm::vec2 pos = p6::random::point(ctx);
-        glm::vec2 dir = pos + p6::random::point(ctx);
+        glm::vec2 dir = p6::random::point(ctx);
         Boid      boidx(pos, dir);
-        boidx.setDirection(glm::vec2(p6::random::number(-1.f, 1.f), p6::random::number(-1.f, 1.f)));
         boids.push_back(boidx);
     }
 
@@ -63,10 +62,10 @@ int main(int argc, char* argv[])
 
         for (auto& boid : boids)
         {
-            // boid.setCohesion(cohesion);
             boid.setDetectionRadius(circle_radius);
             // boid.setAlignment(alignment);
-            boid.setSeparation(avoidance);
+            // boid.setCohesion(cohesion);
+            // boid.setSeparation(avoidance);
             boid.setSpeed(boid_speed);
 
             boid.update(ctx, boids);

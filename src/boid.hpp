@@ -7,9 +7,10 @@
 
 class Boid {
 private:
-    glm::vec2         position;
-    glm::vec2         direction;
-    float             max_speed = 0.4f;
+    glm::vec2 position;
+    glm::vec2 direction;
+
+    float             max_speed;
     std::vector<Boid> neighbors;
     float             detection_radius;
 
@@ -35,7 +36,7 @@ public:
     void UpdateDirection();
 
     // Fonction between boids
-    void Separation();
+    void Separation(const std::vector<Boid>& neighbors);
     void Cohesion(std::vector<Boid>& neighbors);
     void Alignment(const std::vector<Boid>& neighbors);
 
