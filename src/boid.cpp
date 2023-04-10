@@ -21,12 +21,8 @@ void Boid::findNeighbors(std::vector<Boid>& boids)
 
 void Boid::draw(p6::Context& ctx)
 {
-    const auto sg1 = ctx.transform_scope_guard();
-
     ctx.fill       = {0.f, 0.f, 0.f, 0.8f};
     ctx.use_stroke = false;
-
-    ctx.push_transform();
 
     if (!this->neighbors.empty())
     {
@@ -43,8 +39,6 @@ void Boid::draw(p6::Context& ctx)
         p6::Radius{0.08f},
         p6::Rotation{p6::Angle(this->direction)}
     );
-
-    ctx.pop_transform();
 }
 
 void Boid::checkBorders(p6::Context& ctx)
@@ -96,30 +90,12 @@ void Boid::move(p6::Context& ctx)
     this->position += this->direction * ctx.delta_time() * this->max_speed;
 }
 
-void Boid::UpdateDirection()
-{
-    glm::vec2 updateDirection(0, 0);
-    for (auto& boid : this->neighbors)
-    {
-        updateDirection += boid.direction;
-    }
-
-    if (this->neighbors.empty() != 0)
-    {
-        updateDirection /= (static_cast<float>(this->neighbors.size()) + 1);
-    }
-    updateDirection = glm::normalize(updateDirection);
-
-    this->direction = updateDirection;
-}
-
 void Boid::update(p6::Context& ctx, std::vector<Boid>& boids)
 {
     findNeighbors(boids);
     move(ctx);
-    UpdateDirection();
     checkBorders(ctx);
-    // Separation(boids);
+    Separation(boids);
     // Alignment(boids);
 
     // Cohesion(boids);
@@ -136,18 +112,19 @@ void Boid::Separation(const std::vector<Boid>& neighbors)
 
     for (const auto& boid : neighbors)
     {
-        float distance = glm::distance(position, boid.position);
+        float distance = glm::distance(this->position, boid.position);
         if (distance != 0)
         {
-            totalForce += (position - boid.position) / distance;
+            totalForce += (this->position - boid.position) / distance;
+            neighborCount++;
         }
-        neighborCount++;
     }
 
     if (neighborCount > 0)
     {
         totalForce /= static_cast<float>(neighborCount);
         totalForce = normalize(totalForce);
+        std::cout << totalForce.x << std::endl;
     }
     this->direction += totalForce * this->avoidance;
 }
@@ -160,7 +137,7 @@ void Boid::Alignment(const std::vector<Boid>& neighbors)
     // For each neighbor within the maximum alignment distance, add their direction to the alignment vector
     for (const auto& neighbor : neighbors)
     {
-        if (glm::distance(neighbor.position, this->position) < this->detection_radius)
+        if (glm::distance(neighbor.position, this->position) < this->detection_radius && glm::distance(neighbor.position, this->position) != 0)
         {
             alignmentVector += neighbor.direction;
             neighborCount++;

@@ -32,9 +32,6 @@ public:
     // Updates the boid's position based on its neighbors and environment
     void update(p6::Context& ctx, std::vector<Boid>& boids);
 
-    // Update the boid's new direction based on its neighbors
-    void UpdateDirection();
-
     // Fonction between boids
     void Separation(const std::vector<Boid>& neighbors);
     void Cohesion(std::vector<Boid>& neighbors);
