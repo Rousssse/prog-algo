@@ -113,7 +113,8 @@ void Boid::Separation(const std::vector<Boid>& neighbors)
     for (const auto& boid : neighbors)
     {
         float distance = glm::distance(this->position, boid.position);
-        if (distance != 0)
+
+        if (distance != 0 && distance < this->detection_radius)
         {
             totalForce += (this->position - boid.position) / distance;
             neighborCount++;
@@ -124,8 +125,16 @@ void Boid::Separation(const std::vector<Boid>& neighbors)
     {
         totalForce /= static_cast<float>(neighborCount);
         totalForce = normalize(totalForce);
+
         std::cout << totalForce.x << std::endl;
+
+        float speed = glm::length(this->direction);
+        if (speed > this->max_speed)
+        {
+            this->direction = normalize(this->direction) * this->max_speed;
+        }
     }
+
     this->direction += totalForce * this->avoidance;
 }
 
