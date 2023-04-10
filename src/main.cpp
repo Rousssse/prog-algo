@@ -63,9 +63,9 @@ int main(int argc, char* argv[])
         for (auto& boid : boids)
         {
             boid.setDetectionRadius(circle_radius);
-            // boid.setAlignment(alignment);
+            boid.setAlignment(alignment);
             // boid.setCohesion(cohesion);
-            boid.setSeparation(avoidance);
+            // boid.setSeparation(avoidance);
             boid.setSpeed(boid_speed);
 
             boid.update(ctx, boids);

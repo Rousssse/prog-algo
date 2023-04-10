@@ -95,8 +95,8 @@ void Boid::update(p6::Context& ctx, std::vector<Boid>& boids)
     findNeighbors(boids);
     move(ctx);
     checkBorders(ctx);
-    Separation(boids);
-    // Alignment(boids);
+    // Separation(boids);
+    Alignment(boids);
 
     // Cohesion(boids);
 
@@ -141,28 +141,35 @@ void Boid::Separation(const std::vector<Boid>& neighbors)
 void Boid::Alignment(const std::vector<Boid>& neighbors)
 {
     glm::vec2 alignmentVector = {0.0f, 0.0f};
-    int       neighborCount   = 0;
+    float     meanAlignment   = 0.0f;
 
     // For each neighbor within the maximum alignment distance, add their direction to the alignment vector
     for (const auto& neighbor : neighbors)
     {
-        if (glm::distance(neighbor.position, this->position) < this->detection_radius && glm::distance(neighbor.position, this->position) != 0)
+        float distance = glm::distance(this->position, neighbor.position);
+        if (distance < this->detection_radius && distance != 0)
         {
-            alignmentVector += neighbor.direction;
-            neighborCount++;
+            alignmentVector += neighbor.direction * (1.0f / distance);
+            meanAlignment += 1.0f / distance;
         }
     }
 
-    if (neighborCount > 0)
+    if (meanAlignment > 0.0f)
     {
         // Divide the alignment vector by the number of neighbors to get the average direction
-        alignmentVector /= static_cast<float>(neighborCount);
+        alignmentVector /= meanAlignment;
         // Normalize the vector to get a unit vector in the direction of the average direction
         alignmentVector = glm::normalize(alignmentVector);
         std::cout << alignmentVector.x << std::endl;
+
+        float speed = glm::length(this->direction);
+        if (speed > this->max_speed)
+        {
+            this->direction = normalize(this->direction) * this->max_speed;
+        }
     }
 
-    this->direction += alignmentVector;
+    this->direction += alignmentVector * this->alignment;
 }
 
 // void Boid::Cohesion(std::vector<Boid>& neighbors)
