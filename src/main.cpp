@@ -1,6 +1,8 @@
-#include <math.h>
 #include <stdlib.h>
+#include <vcruntime.h>
+#include <cmath>
 #include "p6/p6.h"
+
 #define DOCTEST_CONFIG_IMPLEMENT
 #include <vector>
 #include "boid.hpp"
@@ -20,33 +22,54 @@ int main(int argc, char* argv[])
     // Boid b1(glm::vec2(0, 0), glm::vec2(1, 2));
 
     // Actual app
-    auto ctx = p6::Context{{.title = "prog-algo"}};
+    // auto ctx = p6::Context{{.title = "prog-algo"}};
+    auto  ctx           = p6::Context{{1280, 720, "Dear ImGui"}};
+    float circle_radius = 0.1f;
+    float boid_speed    = 0.4f;
+    float cohesion      = 1.f;
+    float avoidance     = 0.5f;
+    float alignment     = 0.2f;
+
     ctx.maximize_window();
+
     std::vector<Boid> boids;
-    int               Nboids = 20;
-    for (int i = 0; i <= Nboids; ++i)
+
+    int number_boids = 25;
+    for (int i = 0; i <= number_boids; ++i)
     {
-        glm::vec2 position  = p6::random::point(ctx);
-        glm::vec2 direction = p6::random::point(ctx);
-        Boid      boidx(position, direction);
+        glm::vec2 pos = p6::random::point(ctx);
+        glm::vec2 dir = pos + p6::random::point(ctx);
+        Boid      boidx(pos, dir);
+        boidx.setDirection(glm::vec2(p6::random::number(-1.f, 1.f), p6::random::number(-1.f, 1.f)));
         boids.push_back(boidx);
     }
 
-    p6::Angle rotation = 0.011_turn;
+    ctx.imgui = [&]() {
+        // Show a simple window
+        ImGui::Begin("Choose your values");
+        ImGui::SliderFloat("Speed", &boid_speed, 0.f, 2.f);
+        ImGui::SliderFloat("Alignment", &alignment, 0.0f, 1.0f);
+        ImGui::SliderFloat("Detection radius", &circle_radius, 0.01f, 0.5f);
+        ImGui::SliderFloat("Cohesion", &cohesion, 1.f, 15.f);
+        ImGui::SliderFloat("Separation", &avoidance, 0.1f, 1.f);
+        ImGui::End();
+
+        ImGui::ShowDemoWindow();
+    };
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
         ctx.background(p6::NamedColor::LavenderFloral);
-        // ctx.circle(
-        //     p6::Center{ctx.mouse()},
-        //     p6::Radius{0.05f}
-        // );
-        ctx.fill = {1, 1, 1, 1};
-        for (int i = 0; i < Nboids; i++)
+
+        for (auto& boid : boids)
         {
-            boids[i].draw(ctx);
-            boids[i].update(ctx);
-            boids[i].rebond(ctx);
+            // boid.setCohesion(cohesion);
+            boid.setDetectionRadius(circle_radius);
+            // boid.setAlignment(alignment);
+            boid.setSeparation(avoidance);
+            boid.setSpeed(boid_speed);
+
+            boid.update(ctx, boids);
         }
     };
 
