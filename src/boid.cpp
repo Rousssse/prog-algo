@@ -169,7 +169,7 @@ void Boid::Alignment(const std::vector<Boid>& neighbors)
         }
     }
 
-    this->direction += alignmentVector * this->alignment;
+    this->direction += alignmentVector * (this->alignment * 0.02f);
 }
 
 // void Boid::Cohesion(std::vector<Boid>& neighbors)
