@@ -31,9 +31,9 @@ public:
     void update(p6::Context& ctx, std::vector<Boid>& boids);
 
     // Rules fonctions
-    void Alignment(const std::vector<Boid>& neighbors);
-    void Cohesion(const std::vector<Boid>& neighbors);
-    void Separation(const std::vector<Boid>& neighbors);
+    void Align(const std::vector<Boid>& neighbors);
+    void Cohese(const std::vector<Boid>& neighbors);
+    void Separate(const std::vector<Boid>& neighbors);
 
     // Checks if the boid is within the canvas boundaries and adjusts its direction if needed
     void checkBorders(p6::Context& ctx);

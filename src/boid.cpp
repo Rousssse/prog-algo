@@ -100,17 +100,17 @@ void Boid::update(p6::Context& ctx, std::vector<Boid>& boids)
     findNeighbors(boids);
     move(ctx);
     checkBorders(ctx);
-    Separation(boids);
-    Alignment(boids);
+    Separate(boids);
+    Align(boids);
 
-    Cohesion(boids);
+    Cohese(boids);
 
     draw(ctx);
 
     this->neighbors.clear();
 }
 
-void Boid::Separation(const std::vector<Boid>& neighbors)
+void Boid::Separate(const std::vector<Boid>& neighbors)
 {
     glm::vec2 totalForce(0.0f, 0.0f);
     int       neighborCount = 0;
@@ -139,7 +139,7 @@ void Boid::Separation(const std::vector<Boid>& neighbors)
     this->boid_direction += totalForce * this->separation_weight;
 }
 
-void Boid::Alignment(const std::vector<Boid>& neighbors)
+void Boid::Align(const std::vector<Boid>& neighbors)
 {
     glm::vec2 alignmentVector = {0.0f, 0.0f};
     float     meanAlignment   = 0.0f;
@@ -166,7 +166,7 @@ void Boid::Alignment(const std::vector<Boid>& neighbors)
     this->boid_direction += alignmentVector * (this->alignment_weight);
 }
 
-void Boid::Cohesion(const std::vector<Boid>& neighbors)
+void Boid::Cohese(const std::vector<Boid>& neighbors)
 {
     glm::vec2 AveragePosition(0.0f, 0.0f);
     glm::vec2 cohesionDirection(0.0f, 0.0f);
