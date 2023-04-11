@@ -189,7 +189,7 @@ void Boid::Cohesion(const std::vector<Boid>& neighbors)
     {
         AveragePosition /= meanCohesion;
         AveragePosition   = normalize(AveragePosition);
-        cohesionDirection = normalize(AveragePosition - this->position) * (this->cohesion * 0.01f);
+        cohesionDirection = (AveragePosition - this->position) * (this->cohesion * 0.01f);
 
         float speed = glm::length(this->direction);
         if (speed > this->max_speed)
