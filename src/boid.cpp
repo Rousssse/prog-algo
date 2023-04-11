@@ -128,11 +128,7 @@ void Boid::Separation(const std::vector<Boid>& neighbors)
 
         // std::cout << totalForce.x << std::endl;
 
-        float speed = glm::length(this->direction);
-        if (speed > this->max_speed)
-        {
-            this->direction = normalize(this->direction) * this->max_speed;
-        }
+        limitSpeed();
     }
 
     this->direction += totalForce * this->avoidance;
@@ -159,11 +155,7 @@ void Boid::Alignment(const std::vector<Boid>& neighbors)
         alignmentVector = glm::normalize(alignmentVector);
         // std::cout << alignmentVector.x << std::endl;
 
-        float speed = glm::length(this->direction);
-        if (speed > this->max_speed)
-        {
-            this->direction = normalize(this->direction) * this->max_speed;
-        }
+        limitSpeed();
     }
 
     this->direction += alignmentVector * (this->alignment);
@@ -191,12 +183,17 @@ void Boid::Cohesion(const std::vector<Boid>& neighbors)
         AveragePosition   = normalize(AveragePosition);
         cohesionDirection = (AveragePosition - this->position) * (this->cohesion * 0.01f);
 
-        float speed = glm::length(this->direction);
-        if (speed > this->max_speed)
-        {
-            this->direction = normalize(this->direction) * this->max_speed;
-        }
+        limitSpeed();
     }
 
     this->position += cohesionDirection;
+}
+
+void Boid::limitSpeed()
+{
+    float speed = glm::length(this->direction);
+    if (speed > this->max_speed)
+    {
+        this->direction = normalize(this->direction) * this->max_speed;
+    }
 }

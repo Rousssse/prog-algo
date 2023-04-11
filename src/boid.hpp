@@ -45,6 +45,8 @@ public:
     void outTop();
     void outLeft(p6::Context& ctx);
 
+    void limitSpeed();
+
     // Finds the boid's neighbors within a certain radius
     void findNeighbors(std::vector<Boid>& boids);
 
