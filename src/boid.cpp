@@ -172,6 +172,7 @@ void Boid::Alignment(const std::vector<Boid>& neighbors)
 void Boid::Cohesion(const std::vector<Boid>& neighbors)
 {
     glm::vec2 AveragePosition(0.0f, 0.0f);
+    glm::vec2 cohesionDirection(0.0f, 0.0f);
     int       neighborCount = 0;
 
     for (const auto& boid : neighbors)
@@ -187,7 +188,8 @@ void Boid::Cohesion(const std::vector<Boid>& neighbors)
     if (neighborCount > 0)
     {
         AveragePosition /= static_cast<float>(neighborCount);
+        cohesionDirection = glm::normalize(AveragePosition - this->position) * this->cohesion;
     }
 
-    this->position = glm::normalize(AveragePosition - this->position) * this->cohesion;
+    this->position += cohesionDirection;
 }
