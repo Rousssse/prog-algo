@@ -12,7 +12,7 @@ void Boid::findNeighbors(std::vector<Boid>& boids)
 {
     for (auto& boid : boids)
     {
-        if (&boid != this && glm::distance(this->position, boid.position) < this->detection_radius + boid.detection_radius)
+        if (&boid != this && glm::distance(this->boid_position, boid.boid_position) < this->detection_radius + boid.detection_radius)
         {
             this->neighbors.push_back(boid);
         }
@@ -32,12 +32,12 @@ void Boid::draw(p6::Context& ctx)
     {
         ctx.fill = {0.f, 0.2f, 0.5f, 0.5f};
     }
-    ctx.circle(this->position, p6::Radius{this->detection_radius});
+    ctx.circle(this->boid_position, p6::Radius{this->detection_radius});
 
     ctx.equilateral_triangle(
-        p6::Center{this->position},
+        p6::Center{this->boid_position},
         p6::Radius{0.08f},
-        p6::Rotation{p6::Angle(this->direction)}
+        p6::Rotation{p6::Angle(this->boid_direction)}
     );
 }
 
@@ -51,43 +51,48 @@ void Boid::checkBorders(p6::Context& ctx)
 
 void Boid::outLeft(p6::Context& ctx)
 {
-    if (this->position.x - this->detection_radius < -ctx.aspect_ratio() + this->border_width)
+    float border_width = 0.2f;
+
+    if (this->boid_position.x - this->detection_radius < -ctx.aspect_ratio() + border_width)
     {
-        this->position.x = -ctx.aspect_ratio() + this->detection_radius + this->border_width;
-        this->direction.x *= -1;
+        this->boid_position.x = -ctx.aspect_ratio() + this->detection_radius + border_width;
+        this->boid_direction.x *= -1;
     }
 }
 
 void Boid::outRight(p6::Context& ctx)
 {
-    if (this->position.x + this->detection_radius > ctx.aspect_ratio() - this->border_width)
+    float border_width = 0.2f;
+    if (this->boid_position.x + this->detection_radius > ctx.aspect_ratio() - border_width)
     {
-        this->position.x = ctx.aspect_ratio() - this->detection_radius - this->border_width;
-        this->direction.x *= -1;
+        this->boid_position.x = ctx.aspect_ratio() - this->detection_radius - border_width;
+        this->boid_direction.x *= -1;
     }
 }
 
 void Boid::outTop()
 {
-    if (this->position.y + this->detection_radius > 1 - this->border_width)
+    float border_width = 0.2f;
+    if (this->boid_position.y + this->detection_radius > 1 - border_width)
     {
-        this->position.y = 1 - this->detection_radius - this->border_width;
-        this->direction.y *= -1;
+        this->boid_position.y = 1 - this->detection_radius - border_width;
+        this->boid_direction.y *= -1;
     }
 }
 
 void Boid::outBottom()
 {
-    if (this->position.y - this->detection_radius < -1 + this->border_width)
+    float border_width = 0.2f;
+    if (this->boid_position.y - this->detection_radius < -1 + border_width)
     {
-        this->position.y = -1 + this->detection_radius + this->border_width;
-        this->direction.y *= -1;
+        this->boid_position.y = -1 + this->detection_radius + border_width;
+        this->boid_direction.y *= -1;
     }
 }
 
 void Boid::move(p6::Context& ctx)
 {
-    this->position += this->direction * ctx.delta_time() * this->max_speed;
+    this->boid_position += this->boid_direction * ctx.delta_time() * this->max_speed;
 }
 
 void Boid::update(p6::Context& ctx, std::vector<Boid>& boids)
@@ -112,11 +117,11 @@ void Boid::Separation(const std::vector<Boid>& neighbors)
 
     for (const auto& boid : neighbors)
     {
-        float distance = glm::distance(this->position, boid.position);
+        float distance = glm::distance(this->boid_position, boid.boid_position);
 
         if (distance != 0 && distance < this->detection_radius)
         {
-            totalForce += (this->position - boid.position) / distance;
+            totalForce += (this->boid_position - boid.boid_position) / distance;
             neighborCount++;
         }
     }
@@ -131,7 +136,7 @@ void Boid::Separation(const std::vector<Boid>& neighbors)
         limitSpeed();
     }
 
-    this->direction += totalForce * this->avoidance;
+    this->boid_direction += totalForce * this->separation_weight;
 }
 
 void Boid::Alignment(const std::vector<Boid>& neighbors)
@@ -141,10 +146,10 @@ void Boid::Alignment(const std::vector<Boid>& neighbors)
 
     for (const auto& neighbor : neighbors)
     {
-        float distance = glm::distance(this->position, neighbor.position);
+        float distance = glm::distance(this->boid_position, neighbor.boid_position);
         if (distance < this->detection_radius && distance != 0)
         {
-            alignmentVector += neighbor.direction * (1.0f / distance);
+            alignmentVector += neighbor.boid_direction * (1.0f / distance);
             meanAlignment += 1.0f / distance;
         }
     }
@@ -158,7 +163,7 @@ void Boid::Alignment(const std::vector<Boid>& neighbors)
         limitSpeed();
     }
 
-    this->direction += alignmentVector * (this->alignment);
+    this->boid_direction += alignmentVector * (this->alignment_weight);
 }
 
 void Boid::Cohesion(const std::vector<Boid>& neighbors)
@@ -169,10 +174,10 @@ void Boid::Cohesion(const std::vector<Boid>& neighbors)
 
     for (const auto& boid : neighbors)
     {
-        float distance = glm::distance(this->position, boid.position);
+        float distance = glm::distance(this->boid_position, boid.boid_position);
         if (distance < this->detection_radius && distance != 0)
         {
-            AveragePosition += boid.position * (1.0f / distance);
+            AveragePosition += boid.boid_position * (1.0f / distance);
             meanCohesion += 1.0f / distance;
         }
     }
@@ -181,19 +186,19 @@ void Boid::Cohesion(const std::vector<Boid>& neighbors)
     {
         AveragePosition /= meanCohesion;
         AveragePosition   = normalize(AveragePosition);
-        cohesionDirection = (AveragePosition - this->position) * (this->cohesion * 0.01f);
+        cohesionDirection = (AveragePosition - this->boid_position) * (this->cohesion_weight * 0.01f);
 
         limitSpeed();
     }
 
-    this->position += cohesionDirection;
+    this->boid_position += cohesionDirection;
 }
 
 void Boid::limitSpeed()
 {
-    float speed = glm::length(this->direction);
+    float speed = glm::length(this->boid_direction);
     if (speed > this->max_speed)
     {
-        this->direction = normalize(this->direction) * this->max_speed;
+        this->boid_direction = normalize(this->boid_direction) * this->max_speed;
     }
 }

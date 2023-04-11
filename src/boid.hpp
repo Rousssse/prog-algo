@@ -7,36 +7,33 @@
 
 class Boid {
 private:
-    glm::vec2 position;
-    glm::vec2 direction;
+    glm::vec2 boid_position;    // Boid's position
+    glm::vec2 boid_direction;   // Boid's direction
+    float     max_speed;        // Maximum speed of the boid
+    float     detection_radius; // Radius which boid can detect neighbors
 
-    float             max_speed;
-    std::vector<Boid> neighbors;
-    float             detection_radius;
+    // parameters used for the rules of boids
+    float separation_weight; // weight for separation rule
+    float alignment_weight;  // weight for alignment rule
+    float cohesion_weight;   // weight for cohesion rule
 
-    // global rules
-    float avoidance;
-    float alignment;
-    float cohesion;
-
-    // bordures
-    float border_strength = 0.1f;
-    float border_width    = 0.2f;
+    std::vector<Boid> neighbors; // Vector of neighbors for a boid
 
 public:
-    Boid(glm::vec2 pos, glm::vec2 dir)
-        : position(pos), direction(dir){};
+    // Constructor
+    Boid(glm::vec2 position, glm::vec2 direction)
+        : boid_position(position), boid_direction(direction){};
 
-    // Draws the boid on the canvas
+    // Draws the boids on the canvas
     void draw(p6::Context& ctx);
 
     // Updates the boid's position based on its neighbors and environment
     void update(p6::Context& ctx, std::vector<Boid>& boids);
 
-    // Fonction between boids
-    void Separation(const std::vector<Boid>& neighbors);
-    void Cohesion(const std::vector<Boid>& neighbors);
+    // Rules fonctions
     void Alignment(const std::vector<Boid>& neighbors);
+    void Cohesion(const std::vector<Boid>& neighbors);
+    void Separation(const std::vector<Boid>& neighbors);
 
     // Checks if the boid is within the canvas boundaries and adjusts its direction if needed
     void checkBorders(p6::Context& ctx);
@@ -45,6 +42,7 @@ public:
     void outTop();
     void outLeft(p6::Context& ctx);
 
+    // Limits the boid's speed
     void limitSpeed();
 
     // Finds the boid's neighbors within a certain radius
@@ -53,44 +51,12 @@ public:
     // Moves the boid in its current direction
     void move(p6::Context& ctx);
 
-    // Sets the boid's independence (i.e. how much it follows its neighbors)
-    void setAlignment(const float& align)
-    {
-        this->alignment = align;
-    }
+    // Setter Functions
 
-    // Sets the radius within which the boid can detect neighbors
-    void setDetectionRadius(const float& radius)
-    {
-        this->detection_radius = radius;
-    }
+    void setDetectionRadius(const float& radius) { this->detection_radius = radius; }
+    void setMaxSpeed(float speed) { this->max_speed = speed; }
 
-    // avoid collision with other boids
-    void setSeparation(const float& avoid)
-    {
-        this->avoidance = avoid;
-    }
-    // sets cohesion with boids
-    void setCohesion(const float& cohe)
-    {
-        this->cohesion = cohe;
-    }
-
-    // Sets the boid's direction
-    void setDirection(glm::vec2 dir)
-    {
-        this->direction = dir;
-    }
-
-    // Sets the boid's position
-    void setPosition(const glm::vec2& pos)
-    {
-        this->position = pos;
-    }
-
-    // Sets the boid's maximum speed
-    void setSpeed(float speed)
-    {
-        this->max_speed = speed;
-    }
+    void setAlignment(const float& alignment) { this->alignment_weight = alignment; }
+    void setCohesion(const float& cohesion) { this->cohesion_weight = cohesion; }
+    void setSeparation(const float& avoid) { this->separation_weight = avoid; }
 };

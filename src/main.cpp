@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
             boid.setAlignment(alignment);
             boid.setCohesion(cohesion);
             boid.setSeparation(avoidance);
-            boid.setSpeed(boid_speed);
+            boid.setMaxSpeed(boid_speed);
 
             boid.update(ctx, boids);
         }
