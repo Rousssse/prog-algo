@@ -95,8 +95,8 @@ void Boid::update(p6::Context& ctx, std::vector<Boid>& boids)
     findNeighbors(boids);
     move(ctx);
     checkBorders(ctx);
-    // Separation(boids);
-    // Alignment(boids);
+    Separation(boids);
+    Alignment(boids);
 
     Cohesion(boids);
 
@@ -173,22 +173,29 @@ void Boid::Cohesion(const std::vector<Boid>& neighbors)
 {
     glm::vec2 AveragePosition(0.0f, 0.0f);
     glm::vec2 cohesionDirection(0.0f, 0.0f);
-    int       neighborCount = 0;
+    float     meanCohesion = 0.0f;
 
     for (const auto& boid : neighbors)
     {
         float distance = glm::distance(this->position, boid.position);
         if (distance < this->detection_radius && distance != 0)
         {
-            AveragePosition += boid.position;
-            neighborCount++;
+            AveragePosition += boid.position * (1.0f / distance);
+            meanCohesion += 1.0f / distance;
         }
     }
 
-    if (neighborCount > 0)
+    if (meanCohesion > 0)
     {
-        AveragePosition /= static_cast<float>(neighborCount);
-        cohesionDirection = glm::normalize(AveragePosition - this->position) * this->cohesion;
+        AveragePosition /= meanCohesion;
+        AveragePosition   = normalize(AveragePosition);
+        cohesionDirection = normalize(AveragePosition - this->position) * (this->cohesion * 0.01f);
+
+        float speed = glm::length(this->direction);
+        if (speed > this->max_speed)
+        {
+            this->direction = normalize(this->direction) * this->max_speed;
+        }
     }
 
     this->position += cohesionDirection;
