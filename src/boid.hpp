@@ -80,18 +80,6 @@ public:
         this->direction = dir;
     }
 
-    // Gets the boid's position
-    glm::vec2 getPosition()
-    {
-        return this->position;
-    }
-
-    // Gets the boid's maximum speed
-    float getSpeed() const
-    {
-        return this->max_speed;
-    }
-
     // Sets the boid's position
     void setPosition(const glm::vec2& pos)
     {
