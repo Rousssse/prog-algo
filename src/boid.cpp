@@ -95,10 +95,10 @@ void Boid::update(p6::Context& ctx, std::vector<Boid>& boids)
     findNeighbors(boids);
     move(ctx);
     checkBorders(ctx);
-    Separation(boids);
-    Alignment(boids);
+    // Separation(boids);
+    // Alignment(boids);
 
-    // Cohesion(boids);
+    Cohesion(boids);
 
     draw(ctx);
 
@@ -169,28 +169,25 @@ void Boid::Alignment(const std::vector<Boid>& neighbors)
     this->direction += alignmentVector * (this->alignment);
 }
 
-// void Boid::Cohesion(std::vector<Boid>& neighbors)
-// {
-//     int       count = 0;
-//     glm::vec2 AveragePosition(0.0f, 0.0f);
+void Boid::Cohesion(const std::vector<Boid>& neighbors)
+{
+    glm::vec2 AveragePosition(0.0f, 0.0f);
+    int       neighborCount = 0;
 
-//     for (auto& boid : neighbors)
-//     {
-//         if (glm::distance(this->position, boid.position) < this->detection_radius)
-//         {
-//             AveragePosition += boid.position;
-//             count++;
-//         }
-//     }
+    for (const auto& boid : neighbors)
+    {
+        float distance = glm::distance(this->position, boid.position);
+        if (distance < this->detection_radius && distance != 0)
+        {
+            AveragePosition += boid.position;
+            neighborCount++;
+        }
+    }
 
-//     if (count == 0)
-//     {
-//         this->position = glm::vec2(0.0f, 0.0f);
-//     }
-//     if (!neighbors.empty())
-//     {
-//         this->position /= static_cast<float>(neighbors.size());
-//     }
-//     AveragePosition /= static_cast<float>(count);
-//     this->position = glm::normalize(AveragePosition - this->position) * this->max_speed - this->direction;
-// }
+    if (neighborCount > 0)
+    {
+        AveragePosition /= static_cast<float>(neighborCount);
+    }
+
+    this->position = glm::normalize(AveragePosition - this->position) * this->cohesion;
+}

@@ -30,10 +30,11 @@ int main(int argc, char* argv[])
     std::vector<Boid> boids;
     float             circle_radius = 0.1f;
     float             boid_speed    = 0.7f;
-    float             cohesion      = 1.f;
+    float             cohesion      = 0.2f;
     float             avoidance     = 0.2f;
     float             alignment     = 0.2f;
-    int               number_boids  = 25;
+
+    int number_boids = 25;
 
     for (int i = 0; i <= number_boids; ++i)
     {
@@ -49,7 +50,7 @@ int main(int argc, char* argv[])
         ImGui::SliderFloat("Speed", &boid_speed, 0.f, 2.f);
         ImGui::SliderFloat("Alignment", &alignment, 0.0f, 1.0f);
         ImGui::SliderFloat("Detection radius", &circle_radius, 0.01f, 0.5f);
-        ImGui::SliderFloat("Cohesion", &cohesion, 1.f, 15.f);
+        ImGui::SliderFloat("Cohesion", &cohesion, 0.0f, 1.f);
         ImGui::SliderFloat("Separation", &avoidance, 0.0f, 1.f);
         ImGui::End();
 
@@ -63,9 +64,9 @@ int main(int argc, char* argv[])
         for (auto& boid : boids)
         {
             boid.setDetectionRadius(circle_radius);
-            boid.setAlignment(alignment);
-            // boid.setCohesion(cohesion);
-            boid.setSeparation(avoidance);
+            // boid.setAlignment(alignment);
+            boid.setCohesion(cohesion);
+            // boid.setSeparation(avoidance);
             boid.setSpeed(boid_speed);
 
             boid.update(ctx, boids);

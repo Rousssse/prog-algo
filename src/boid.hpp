@@ -17,6 +17,7 @@ private:
     // global rules
     float avoidance;
     float alignment;
+    float cohesion;
 
     // bordures
     float border_strength = 0.1f;
@@ -34,7 +35,7 @@ public:
 
     // Fonction between boids
     void Separation(const std::vector<Boid>& neighbors);
-    void Cohesion(std::vector<Boid>& neighbors);
+    void Cohesion(const std::vector<Boid>& neighbors);
     void Alignment(const std::vector<Boid>& neighbors);
 
     // Checks if the boid is within the canvas boundaries and adjusts its direction if needed
@@ -66,6 +67,11 @@ public:
     void setSeparation(const float& avoid)
     {
         this->avoidance = avoid;
+    }
+    // sets cohesion with boids
+    void setCohesion(const float& cohe)
+    {
+        this->cohesion = cohe;
     }
 
     // Sets the boid's direction
