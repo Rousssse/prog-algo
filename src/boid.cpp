@@ -95,7 +95,7 @@ void Boid::update(p6::Context& ctx, std::vector<Boid>& boids)
     findNeighbors(boids);
     move(ctx);
     checkBorders(ctx);
-    // Separation(boids);
+    Separation(boids);
     Alignment(boids);
 
     // Cohesion(boids);
@@ -126,7 +126,7 @@ void Boid::Separation(const std::vector<Boid>& neighbors)
         totalForce /= static_cast<float>(neighborCount);
         totalForce = normalize(totalForce);
 
-        std::cout << totalForce.x << std::endl;
+        // std::cout << totalForce.x << std::endl;
 
         float speed = glm::length(this->direction);
         if (speed > this->max_speed)
@@ -143,7 +143,6 @@ void Boid::Alignment(const std::vector<Boid>& neighbors)
     glm::vec2 alignmentVector = {0.0f, 0.0f};
     float     meanAlignment   = 0.0f;
 
-    // For each neighbor within the maximum alignment distance, add their direction to the alignment vector
     for (const auto& neighbor : neighbors)
     {
         float distance = glm::distance(this->position, neighbor.position);
@@ -156,11 +155,9 @@ void Boid::Alignment(const std::vector<Boid>& neighbors)
 
     if (meanAlignment > 0.0f)
     {
-        // Divide the alignment vector by the number of neighbors to get the average direction
         alignmentVector /= meanAlignment;
-        // Normalize the vector to get a unit vector in the direction of the average direction
         alignmentVector = glm::normalize(alignmentVector);
-        std::cout << alignmentVector.x << std::endl;
+        // std::cout << alignmentVector.x << std::endl;
 
         float speed = glm::length(this->direction);
         if (speed > this->max_speed)
@@ -169,7 +166,7 @@ void Boid::Alignment(const std::vector<Boid>& neighbors)
         }
     }
 
-    this->direction += alignmentVector * (this->alignment * 0.02f);
+    this->direction += alignmentVector * (this->alignment);
 }
 
 // void Boid::Cohesion(std::vector<Boid>& neighbors)
