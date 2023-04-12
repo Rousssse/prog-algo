@@ -98,7 +98,7 @@ void Boid::update(p6::Context& ctx, std::vector<Boid>& boids)
     Separate(boids);
     Align(boids);
 
-    Cohese(boids);
+    Cohesion(boids);
 
     draw(ctx);
 
@@ -112,7 +112,7 @@ void Boid::Separate(const std::vector<Boid>& neighbors)
 
     for (const auto& boid : neighbors)
     {
-        float distance = glm::distance(this->boid_position, boid.boid_position);
+        const float distance = glm::distance(this->boid_position, boid.boid_position);
 
         if (distance != 0 && distance < this->detection_radius)
         {
@@ -141,7 +141,7 @@ void Boid::Align(const std::vector<Boid>& neighbors)
 
     for (const auto& neighbor : neighbors)
     {
-        float distance = glm::distance(this->boid_position, neighbor.boid_position);
+        const float distance = glm::distance(this->boid_position, neighbor.boid_position);
         if (distance < this->detection_radius && distance != 0)
         {
             alignmentVector += neighbor.boid_direction * (1.0f / distance);
@@ -161,7 +161,7 @@ void Boid::Align(const std::vector<Boid>& neighbors)
     this->boid_direction += alignmentVector * (this->alignment_weight);
 }
 
-void Boid::Cohese(const std::vector<Boid>& neighbors)
+void Boid::Cohesion(const std::vector<Boid>& neighbors)
 {
     glm::vec2 AveragePosition(0.0f, 0.0f);
     glm::vec2 cohesionDirection(0.0f, 0.0f);
@@ -169,7 +169,8 @@ void Boid::Cohese(const std::vector<Boid>& neighbors)
 
     for (const auto& boid : neighbors)
     {
-        float distance = glm::distance(this->boid_position, boid.boid_position);
+        const float distance = glm::distance(this->boid_position, boid.boid_position);
+
         if (distance < this->detection_radius && distance != 0)
         {
             AveragePosition += boid.boid_position * (1.0f / distance);
@@ -180,8 +181,7 @@ void Boid::Cohese(const std::vector<Boid>& neighbors)
     if (meanCohesion > 0)
     {
         AveragePosition /= meanCohesion;
-        AveragePosition   = normalize(AveragePosition);
-        cohesionDirection = (AveragePosition - this->boid_position) * (this->cohesion_weight * 0.01f);
+        cohesionDirection = (AveragePosition - this->boid_position) * (this->cohesion_weight * 0.05f);
 
         limitSpeed();
     }

@@ -19,10 +19,7 @@ int main(int argc, char* argv[])
             return EXIT_SUCCESS;
     }
 
-    // Boid b1(glm::vec2(0, 0), glm::vec2(1, 2));
-
     // Actual app
-    // auto ctx = p6::Context{{.title = "prog-algo"}};
     auto ctx = p6::Context{{1280, 720, "Dear ImGui"}};
     ctx.maximize_window();
 
@@ -30,7 +27,7 @@ int main(int argc, char* argv[])
     std::vector<Boid> boids;
     float             circle_radius = 0.1f;
     float             boid_speed    = 0.7f;
-    float             cohesion      = 0.2f;
+    float             cohesion      = 0.05f;
     float             avoidance     = 0.2f;
     float             alignment     = 0.2f;
 
@@ -50,7 +47,7 @@ int main(int argc, char* argv[])
         ImGui::SliderFloat("Speed", &boid_speed, 0.f, 2.f);
         ImGui::SliderFloat("Alignment", &alignment, 0.0f, 1.0f);
         ImGui::SliderFloat("Detection radius", &circle_radius, 0.01f, 0.5f);
-        ImGui::SliderFloat("Cohesion", &cohesion, 0.0f, 1.f);
+        ImGui::SliderFloat("Cohesion", &cohesion, 0.0f, 0.1f);
         ImGui::SliderFloat("Separation", &avoidance, 0.0f, 1.f);
         ImGui::End();
 
@@ -64,10 +61,11 @@ int main(int argc, char* argv[])
         for (auto& boid : boids)
         {
             boid.setDetectionRadius(circle_radius);
+            boid.setMaxSpeed(boid_speed);
+
             boid.setAlignment(alignment);
             boid.setCohesion(cohesion);
             boid.setSeparation(avoidance);
-            boid.setMaxSpeed(boid_speed);
 
             boid.update(ctx, boids);
         }

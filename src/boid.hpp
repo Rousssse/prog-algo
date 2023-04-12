@@ -32,7 +32,7 @@ public:
 
     // Rules fonctions
     void Align(const std::vector<Boid>& neighbors);
-    void Cohese(const std::vector<Boid>& neighbors);
+    void Cohesion(const std::vector<Boid>& neighbors);
     void Separate(const std::vector<Boid>& neighbors);
 
     // Checks if the boid is within the canvas boundaries and adjusts its direction if needed
