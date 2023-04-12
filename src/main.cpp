@@ -44,9 +44,9 @@ int main(int argc, char* argv[])
     ctx.imgui = [&]() {
         // Show a simple window
         ImGui::Begin("Choose your values");
+        ImGui::SliderFloat("Detection radius", &circle_radius, 0.01f, 0.5f);
         ImGui::SliderFloat("Speed", &boid_speed, 0.f, 2.f);
         ImGui::SliderFloat("Alignment", &alignment, 0.0f, 1.0f);
-        ImGui::SliderFloat("Detection radius", &circle_radius, 0.01f, 0.5f);
         ImGui::SliderFloat("Cohesion", &cohesion, 0.0f, 0.1f);
         ImGui::SliderFloat("Separation", &avoidance, 0.0f, 1.f);
         ImGui::End();

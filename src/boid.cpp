@@ -95,58 +95,50 @@ void Boid::update(p6::Context& ctx, std::vector<Boid>& boids)
     findNeighbors(boids);
     move(ctx);
     checkBorders(ctx);
-    Separate(boids);
-    Align(boids);
-
-    Cohesion(boids);
+    for (const auto& neighbor : boids)
+    {
+        const float distance = glm::distance(this->boid_position, neighbor.boid_position);
+        Separate(neighbor, distance);
+        Align(neighbor, distance);
+        Cohesion(neighbor, distance);
+    }
 
     draw(ctx);
 
     this->neighbors.clear();
 }
 
-void Boid::Separate(const std::vector<Boid>& neighbors)
+void Boid::Separate(const Boid& neighbor, const float& distance)
 {
-    glm::vec2 totalForce(0.0f, 0.0f);
+    glm::vec2 separationVector(0.0f, 0.0f);
     int       neighborCount = 0;
 
-    for (const auto& boid : neighbors)
+    if (distance != 0 && distance < this->detection_radius)
     {
-        const float distance = glm::distance(this->boid_position, boid.boid_position);
-
-        if (distance != 0 && distance < this->detection_radius)
-        {
-            totalForce += (this->boid_position - boid.boid_position) / distance;
-            neighborCount++;
-        }
+        separationVector += (this->boid_position - neighbor.boid_position) / distance;
+        neighborCount++;
     }
 
     if (neighborCount > 0)
     {
-        totalForce /= static_cast<float>(neighborCount);
-        totalForce = normalize(totalForce);
-
-        // std::cout << totalForce.x << std::endl;
-
+        separationVector /= static_cast<float>(neighborCount);
+        separationVector = normalize(separationVector);
+        // std::cout << separationVector.x << std::endl;
         limitSpeed();
     }
 
-    this->boid_direction += totalForce * this->separation_weight;
+    this->boid_direction += separationVector * this->separation_weight;
 }
 
-void Boid::Align(const std::vector<Boid>& neighbors)
+void Boid::Align(const Boid& neighbor, const float& distance)
 {
     glm::vec2 alignmentVector = {0.0f, 0.0f};
     float     meanAlignment   = 0.0f;
 
-    for (const auto& neighbor : neighbors)
+    if (distance < this->detection_radius && distance != 0)
     {
-        const float distance = glm::distance(this->boid_position, neighbor.boid_position);
-        if (distance < this->detection_radius && distance != 0)
-        {
-            alignmentVector += neighbor.boid_direction * (1.0f / distance);
-            meanAlignment += 1.0f / distance;
-        }
+        alignmentVector += neighbor.boid_direction * (1.0f / distance);
+        meanAlignment += 1.0f / distance;
     }
 
     if (meanAlignment > 0.0f)
@@ -161,21 +153,16 @@ void Boid::Align(const std::vector<Boid>& neighbors)
     this->boid_direction += alignmentVector * (this->alignment_weight);
 }
 
-void Boid::Cohesion(const std::vector<Boid>& neighbors)
+void Boid::Cohesion(const Boid& neighbor, const float& distance)
 {
     glm::vec2 AveragePosition(0.0f, 0.0f);
     glm::vec2 cohesionDirection(0.0f, 0.0f);
     float     meanCohesion = 0.0f;
 
-    for (const auto& boid : neighbors)
+    if (distance < this->detection_radius && distance != 0)
     {
-        const float distance = glm::distance(this->boid_position, boid.boid_position);
-
-        if (distance < this->detection_radius && distance != 0)
-        {
-            AveragePosition += boid.boid_position * (1.0f / distance);
-            meanCohesion += 1.0f / distance;
-        }
+        AveragePosition += neighbor.boid_position * (1.0f / distance);
+        meanCohesion += 1.0f / distance;
     }
 
     if (meanCohesion > 0)

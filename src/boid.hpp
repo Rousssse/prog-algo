@@ -9,7 +9,7 @@ class Boid {
 private:
     glm::vec2 boid_position;    // Boid's position
     glm::vec2 boid_direction;   // Boid's direction
-    float     max_speed;        // Maximum speed of the boid
+    float     max_speed;        // Maximum speed of the boid ({1} soit initialiser ici une fois pour toute ou alors le mettre dans le constructeur)
     float     detection_radius; // Radius which boid can detect neighbors
 
     // parameters used for the rules of boids
@@ -31,9 +31,9 @@ public:
     void update(p6::Context& ctx, std::vector<Boid>& boids);
 
     // Rules fonctions
-    void Align(const std::vector<Boid>& neighbors);
-    void Cohesion(const std::vector<Boid>& neighbors);
-    void Separate(const std::vector<Boid>& neighbors);
+    void Align(const Boid& neighbor, const float& distance);
+    void Cohesion(const Boid& neighbor, const float& distance);
+    void Separate(const Boid& neighbor, const float& distance);
 
     // Checks if the boid is within the canvas boundaries and adjusts its direction if needed
     void checkBorders(p6::Context& ctx);
