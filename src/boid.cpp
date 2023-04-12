@@ -51,41 +51,36 @@ void Boid::checkBorders(p6::Context& ctx)
 
 void Boid::outLeft(p6::Context& ctx)
 {
-    float border_width = 0.2f;
-
-    if (this->boid_position.x - this->detection_radius < -ctx.aspect_ratio() + border_width)
+    if (this->boid_position.x - this->detection_radius < -ctx.aspect_ratio())
     {
-        this->boid_position.x = -ctx.aspect_ratio() + this->detection_radius + border_width;
+        this->boid_position.x = -ctx.aspect_ratio() + this->detection_radius;
         this->boid_direction.x *= -1;
     }
 }
 
 void Boid::outRight(p6::Context& ctx)
 {
-    float border_width = 0.2f;
-    if (this->boid_position.x + this->detection_radius > ctx.aspect_ratio() - border_width)
+    if (this->boid_position.x + this->detection_radius > ctx.aspect_ratio())
     {
-        this->boid_position.x = ctx.aspect_ratio() - this->detection_radius - border_width;
+        this->boid_position.x = ctx.aspect_ratio() - this->detection_radius;
         this->boid_direction.x *= -1;
     }
 }
 
 void Boid::outTop()
 {
-    float border_width = 0.2f;
-    if (this->boid_position.y + this->detection_radius > 1 - border_width)
+    if (this->boid_position.y + this->detection_radius > 1)
     {
-        this->boid_position.y = 1 - this->detection_radius - border_width;
+        this->boid_position.y = 1 - this->detection_radius;
         this->boid_direction.y *= -1;
     }
 }
 
 void Boid::outBottom()
 {
-    float border_width = 0.2f;
-    if (this->boid_position.y - this->detection_radius < -1 + border_width)
+    if (this->boid_position.y - this->detection_radius < -1)
     {
-        this->boid_position.y = -1 + this->detection_radius + border_width;
+        this->boid_position.y = -1 + this->detection_radius;
         this->boid_direction.y *= -1;
     }
 }
