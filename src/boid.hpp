@@ -12,12 +12,14 @@
 #include "p6/p6.h"
 
 struct Parameters {
+private:
     float detection_radius;
     float max_speed;
     float alignment_weight;  // weight for alignment rule
     float cohesion_weight;   // weight for cohesion rule
     float separation_weight; // weight for separation rule
 
+public:
     Parameters(float radius, float speed, float alignment, float cohesion, float separation)
         : detection_radius(radius), max_speed(speed), alignment_weight(alignment), cohesion_weight(cohesion), separation_weight(separation)
     {
@@ -32,6 +34,27 @@ struct Parameters {
         ImGui::SliderFloat("Cohesion", &this->cohesion_weight, 0.f, 0.1f);
         ImGui::SliderFloat("Separation", &this->separation_weight, 0.f, 1.f);
         ImGui::End();
+    }
+
+    float getDetectionRadius() const
+    {
+        return detection_radius;
+    }
+    float getMaxSpeed() const
+    {
+        return max_speed;
+    }
+    float getAlignmentWeight() const
+    {
+        return alignment_weight;
+    }
+    float getCohesionWeight() const
+    {
+        return cohesion_weight;
+    }
+    float getSeparationWeight() const
+    {
+        return separation_weight;
     }
 };
 
