@@ -1,9 +1,8 @@
 #pragma once
-#include <math.h>
-#include <stdlib.h>
 #include <vcruntime.h>
 #include <algorithm>
 #include <cmath>
+#include <cstdlib>
 #include <iterator>
 #include <random>
 #include <vector>
@@ -19,7 +18,7 @@ struct Parameters {
     float cohesion_weight;   // weight for cohesion rule
     float separation_weight; // weight for separation rule
 
-    Parameters(const float radius, const float speed, const float alignment, const float cohesion, const float separation)
+    Parameters(float radius, float speed, float alignment, float cohesion, float separation)
         : detection_radius(radius), max_speed(speed), alignment_weight(alignment), cohesion_weight(cohesion), separation_weight(separation)
     {
     }
@@ -36,6 +35,11 @@ struct Parameters {
     }
 };
 
+struct BoidsAttributes {
+    glm::vec2 position;
+    glm::vec2 direction;
+};
+
 class Boid {
 private:
     glm::vec2 boid_position;  // Boid's position
@@ -49,7 +53,7 @@ private:
     // Moves the boid in its current direction
     void move(p6::Context& ctx, Parameters& parameters);
 
-    // Rules fonctions
+    // Rules function
     void Align(const Boid& neighbor, const float& distance, Parameters& parameters);
     void Cohesion(const Boid& neighbor, const float& distance, Parameters& parameters);
     void Separate(const Boid& neighbor, const float& distance, Parameters& parameters);
@@ -66,8 +70,8 @@ private:
 
 public:
     // Constructor
-    Boid(glm::vec2 position, glm::vec2 direction)
-        : boid_position(position), boid_direction(direction){};
+    explicit Boid(BoidsAttributes attributes)
+        : boid_position(attributes.position), boid_direction(attributes.position){};
 
     // Updates the boid's position based on its neighbors and environment
     void update(p6::Context& ctx, std::vector<Boid>& boids, Parameters& parameters);

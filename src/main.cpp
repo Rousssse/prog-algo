@@ -1,6 +1,6 @@
-#include <stdlib.h>
 #include <vcruntime.h>
 #include <cmath>
+#include <cstdlib>
 #include "p6/p6.h"
 
 #define DOCTEST_CONFIG_IMPLEMENT
@@ -30,9 +30,10 @@ int main(int argc, char* argv[])
 
     for (int i = 0; i <= number_boids; ++i)
     {
-        glm::vec2 pos = p6::random::point(ctx);
-        glm::vec2 dir = p6::random::point(ctx);
-        Boid      boidx(pos, dir);
+        glm::vec2       pos = p6::random::point(ctx);
+        glm::vec2       dir = p6::random::point(ctx);
+        BoidsAttributes attributes{.position = pos, .direction = dir};
+        Boid            boidx(attributes);
         boids.push_back(boidx);
     }
 
