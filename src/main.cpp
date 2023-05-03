@@ -24,9 +24,10 @@ int main(int argc, char* argv[])
     ctx.maximize_window();
 
     // data
-    std::vector<Boid> boids;
-    int               number_boids = 25;
-    Parameters        parameters{0.1f, 0.7f, 0.2f, 0.05f, 0.2f};
+    std::vector<Boid>    boids;
+    int                  number_boids = 25;
+    ParametersAttributes parametersAttributes{.radius = 0.1f, .speed = 0.7f, .weight_alignment = 0.2f, .weight_cohesion = 0.05f, .weight_separation = 0.2f};
+    Parameters           parameters{parametersAttributes};
 
     for (int i = 0; i <= number_boids; ++i)
     {

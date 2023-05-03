@@ -11,6 +11,14 @@
 #include "glm/geometric.hpp"
 #include "p6/p6.h"
 
+struct ParametersAttributes {
+    float radius;
+    float speed;
+    float weight_alignment;
+    float weight_cohesion;
+    float weight_separation;
+};
+
 struct Parameters {
 private:
     float detection_radius;
@@ -20,19 +28,17 @@ private:
     float separation_weight; // weight for separation rule
 
 public:
-    Parameters(float radius, float speed, float alignment, float cohesion, float separation)
-        : detection_radius(radius), max_speed(speed), alignment_weight(alignment), cohesion_weight(cohesion), separation_weight(separation)
-    {
-    }
+    explicit Parameters(ParametersAttributes attributes)
+        : detection_radius(attributes.radius), max_speed(attributes.speed), alignment_weight(attributes.weight_alignment), cohesion_weight(attributes.weight_cohesion), separation_weight(attributes.weight_separation){};
 
     void updateParameters()
     {
         ImGui::Begin("Choose your values");
-        ImGui::SliderFloat("Detection radius", &this->detection_radius, 0.f, 1.f);
-        ImGui::SliderFloat("Max Speed", &this->max_speed, 0.0f, 2.f);
-        ImGui::SliderFloat("Alignment", &this->alignment_weight, 0.f, 1.f);
-        ImGui::SliderFloat("Cohesion", &this->cohesion_weight, 0.f, 0.1f);
-        ImGui::SliderFloat("Separation", &this->separation_weight, 0.f, 1.f);
+        ImGui::SliderFloat("Detection radius", &detection_radius, 0.f, 1.f);
+        ImGui::SliderFloat("Max Speed", &max_speed, 0.0f, 2.f);
+        ImGui::SliderFloat("Alignment", &alignment_weight, 0.f, 1.f);
+        ImGui::SliderFloat("Cohesion", &cohesion_weight, 0.f, 0.1f);
+        ImGui::SliderFloat("Separation", &separation_weight, 0.f, 1.f);
         ImGui::End();
     }
 
