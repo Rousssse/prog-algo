@@ -1,12 +1,4 @@
 #include "boid.hpp"
-#include <math.h>
-#include <stdlib.h>
-#include <algorithm>
-#include <random>
-#include <vector>
-#include "glm/fwd.hpp"
-#include "glm/geometric.hpp"
-#include "p6/p6.h"
 
 void Boid::findNeighbors(std::vector<Boid>& boids)
 {
@@ -90,17 +82,18 @@ void Boid::move(p6::Context& ctx)
     this->boid_position += this->boid_direction * ctx.delta_time() * this->max_speed;
 }
 
-void Boid::update(p6::Context& ctx, std::vector<Boid>& boids)
+void Boid::update(p6::Context& ctx, std::vector<Boid>& boids, Parameters& parameters)
 {
+    // parameters.updateParameters();
     findNeighbors(boids);
     move(ctx);
     checkBorders(ctx);
     for (const auto& neighbor : boids)
     {
         const float distance = glm::distance(this->boid_position, neighbor.boid_position);
-        Separate(neighbor, distance);
-        Align(neighbor, distance);
-        Cohesion(neighbor, distance);
+        Separate(neighbor, distance, parameters);
+        Align(neighbor, distance, parameters);
+        Cohesion(neighbor, distance, parameters);
     }
 
     draw(ctx);
@@ -108,7 +101,7 @@ void Boid::update(p6::Context& ctx, std::vector<Boid>& boids)
     this->neighbors.clear();
 }
 
-void Boid::Separate(const Boid& neighbor, const float& distance)
+void Boid::Separate(const Boid& neighbor, const float& distance, Parameters& parameters)
 {
     glm::vec2 separationVector(0.0f, 0.0f);
     int       neighborCount = 0;
@@ -127,10 +120,10 @@ void Boid::Separate(const Boid& neighbor, const float& distance)
         limitSpeed();
     }
 
-    this->boid_direction += separationVector * this->separation_weight;
+    this->boid_direction += separationVector * parameters.separation_weight;
 }
 
-void Boid::Align(const Boid& neighbor, const float& distance)
+void Boid::Align(const Boid& neighbor, const float& distance, Parameters& parameters)
 {
     glm::vec2 alignmentVector = {0.0f, 0.0f};
     float     meanAlignment   = 0.0f;
@@ -150,10 +143,10 @@ void Boid::Align(const Boid& neighbor, const float& distance)
         limitSpeed();
     }
 
-    this->boid_direction += alignmentVector * (this->alignment_weight);
+    this->boid_direction += alignmentVector * parameters.alignment_weight;
 }
 
-void Boid::Cohesion(const Boid& neighbor, const float& distance)
+void Boid::Cohesion(const Boid& neighbor, const float& distance, Parameters& parameters)
 {
     glm::vec2 AveragePosition(0.0f, 0.0f);
     glm::vec2 cohesionDirection(0.0f, 0.0f);
@@ -168,7 +161,7 @@ void Boid::Cohesion(const Boid& neighbor, const float& distance)
     if (meanCohesion > 0)
     {
         AveragePosition /= meanCohesion;
-        cohesionDirection = (AveragePosition - this->boid_position) * (this->cohesion_weight * 0.05f);
+        cohesionDirection = (AveragePosition - this->boid_position) * (parameters.cohesion_weight * 0.05f);
 
         limitSpeed();
     }

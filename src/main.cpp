@@ -20,54 +20,30 @@ int main(int argc, char* argv[])
     }
 
     // Actual app
-    auto ctx = p6::Context{{1280, 720, "Dear ImGui"}};
+    auto ctx = p6::Context{{1280, 720, "Boids project"}};
     ctx.maximize_window();
 
     // data
     std::vector<Boid> boids;
-    float             circle_radius = 0.1f;
-    float             boid_speed    = 0.7f;
-    float             cohesion      = 0.05f;
-    float             avoidance     = 0.2f;
-    float             alignment     = 0.2f;
-
-    int number_boids = 25;
+    int               number_boids = 25;
+    Parameters        parameters{0.1f, 0.7f, 0.2f, 0.05f, 0.2f};
 
     for (int i = 0; i <= number_boids; ++i)
     {
         glm::vec2 pos = p6::random::point(ctx);
         glm::vec2 dir = p6::random::point(ctx);
-        Boid      boidx(pos, dir);
+        Boid      boidx(pos, dir, parameters.max_speed, parameters.detection_radius);
         boids.push_back(boidx);
     }
-
-    ctx.imgui = [&]() {
-        // Show a simple window
-        ImGui::Begin("Choose your values");
-        ImGui::SliderFloat("Detection radius", &circle_radius, 0.01f, 0.5f);
-        ImGui::SliderFloat("Speed", &boid_speed, 0.f, 2.f);
-        ImGui::SliderFloat("Alignment", &alignment, 0.0f, 1.0f);
-        ImGui::SliderFloat("Cohesion", &cohesion, 0.0f, 0.1f);
-        ImGui::SliderFloat("Separation", &avoidance, 0.0f, 1.f);
-        ImGui::End();
-
-        ImGui::ShowDemoWindow();
-    };
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
         ctx.background(p6::NamedColor::LavenderFloral);
 
+        parameters.updateParameters();
         for (auto& boid : boids)
         {
-            boid.setDetectionRadius(circle_radius);
-            boid.setMaxSpeed(boid_speed);
-
-            boid.setAlignment(alignment);
-            boid.setCohesion(cohesion);
-            boid.setSeparation(avoidance);
-
-            boid.update(ctx, boids);
+            boid.update(ctx, boids, parameters);
         }
     };
 
