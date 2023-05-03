@@ -38,20 +38,20 @@ struct Parameters {
 
 class Boid {
 private:
-    glm::vec2 boid_position;    // Boid's position
-    glm::vec2 boid_direction;   // Boid's direction
-    float     max_speed;        // Maximum speed of the boid ({1} soit initialiser ici une fois pour toute ou alors le mettre dans le constructeur)
-    float     detection_radius; // Radius which boid can detect neighbors
+    glm::vec2 boid_position;  // Boid's position
+    glm::vec2 boid_direction; // Boid's direction
+    // float     max_speed        = 0.5f; // Maximum speed of the boid
+    // float     detection_radius = 0.5f; // Radius which boid can detect neighbors
 
     std::vector<Boid> neighbors; // Vector of neighbors for a boid
 
 public:
     // Constructor
-    Boid(glm::vec2 position, glm::vec2 direction, float speed, float radius)
-        : boid_position(position), boid_direction(direction), max_speed(speed), detection_radius(radius){};
+    Boid(glm::vec2 position, glm::vec2 direction)
+        : boid_position(position), boid_direction(direction){};
 
     // Draws the boids on the canvas
-    void draw(p6::Context& ctx);
+    void draw(p6::Context& ctx, Parameters& parameters);
 
     // Updates the boid's position based on its neighbors and environment
     void update(p6::Context& ctx, std::vector<Boid>& boids, Parameters& parameters);
@@ -62,20 +62,20 @@ public:
     void Separate(const Boid& neighbor, const float& distance, Parameters& parameters);
 
     // Checks if the boid is within the canvas boundaries and adjusts its direction if needed
-    void checkBorders(p6::Context& ctx);
-    void outRight(p6::Context& ctx);
-    void outBottom();
-    void outTop();
-    void outLeft(p6::Context& ctx);
+    void checkBorders(p6::Context& ctx, Parameters& parameters);
+    void outRight(p6::Context& ctx, Parameters& parameters);
+    void outBottom(Parameters& parameters);
+    void outTop(Parameters& parameters);
+    void outLeft(p6::Context& ctx, Parameters& parameters);
 
     // Limits the boid's speed
-    void limitSpeed();
+    void limitSpeed(Parameters& parameters);
 
     // Finds the boid's neighbors within a certain radius
-    void findNeighbors(std::vector<Boid>& boids);
+    void findNeighbors(std::vector<Boid>& boids, Parameters& parameters);
 
     // Moves the boid in its current direction
-    void move(p6::Context& ctx);
+    void move(p6::Context& ctx, Parameters& parameters);
 
     // void setDetectionRadius(const float& radius) { this->detection_radius = radius; }
     // void setMaxSpeed(float speed) { this->max_speed = speed; }

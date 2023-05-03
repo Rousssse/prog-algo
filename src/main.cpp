@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
     {
         glm::vec2 pos = p6::random::point(ctx);
         glm::vec2 dir = p6::random::point(ctx);
-        Boid      boidx(pos, dir, parameters.max_speed, parameters.detection_radius);
+        Boid      boidx(pos, dir);
         boids.push_back(boidx);
     }
 
